@@ -17,6 +17,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.Where;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "shc_super_hero")
 public class SuperHero implements Serializable {
@@ -40,9 +44,11 @@ public class SuperHero implements Serializable {
 	private String superHeroName;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	    @JoinTable(name = "shc_super_hero_mission", 
+        @JoinTable(name = "shc_super_hero_mission", 
 	               joinColumns = @JoinColumn(name = "sh_id"),
 	               inverseJoinColumns = @JoinColumn(name = "m_id"))
+    @Where(clause="is_deleted = 0")
+    @JsonManagedReference
 	private List<Mission> missions = new ArrayList<>();
 	
 	public SuperHero() {

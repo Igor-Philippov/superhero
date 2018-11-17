@@ -15,7 +15,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+/** An entity class which contains the information on a mission. */
 @Entity
 @Table(name = "shc_mission")
 public class Mission implements Serializable {
@@ -39,6 +43,8 @@ public class Mission implements Serializable {
 	private boolean isDeleted;
 
     @ManyToMany(mappedBy = "missions")
+    @Where(clause="is_deleted = 0")
+    @JsonBackReference
 	private List<SuperHero> superHeros = new ArrayList<>();
 
 	public Mission() {
