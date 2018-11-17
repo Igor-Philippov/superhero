@@ -14,15 +14,14 @@ create table shc_super_hero (
     id             bigint       not null auto_increment,
     name_first     varchar(32)  not null,
     name_last      varchar(64)  not null,
-    name_superhero varchar(128) not null,
-	unique key IDX1_super_hero (name_first, name_last, name_superhero),
-	unique key IDX2_super_hero (name_superhero),
+    name_superhero varchar(128) character set latin1 collate latin1_general_ci not null,
+	unique key IDX1_super_hero (name_superhero),
     primary key (id)
 );
 
 create table shc_mission (
     id           bigint       not null auto_increment,
-    name         varchar(255) not null,
+    name         varchar(255) character set latin1 collate latin1_general_ci not null,
     is_completed tinyint(1)   not null default 0,
     is_deleted   tinyint(1)   not null default 0,
     unique key IDX1_shc_super_hero (name),
