@@ -1,6 +1,7 @@
 package com.superhero.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,8 +20,7 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
      *          If no mission is found, this method returns an empty list.
      */
     @Query("SELECT m FROM Mission m where LOWER(m.name) = LOWER(:name)") 
-    public List<Mission> findByName(@Param("name") String name);
-    
+    public Optional<Mission> findByName(@Param("name") String name);
     
     /**
      * Finds all completed missions.

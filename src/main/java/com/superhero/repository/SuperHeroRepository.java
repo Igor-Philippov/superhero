@@ -1,6 +1,7 @@
 package com.superhero.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,6 +38,6 @@ public interface SuperHeroRepository extends JpaRepository<SuperHero, Long> {
      *          If no persons is found, this method returns an empty list.
      */
     @Query("SELECT s FROM SuperHero s where LOWER(s.superHeroName) = LOWER(:superHeroName)") 
-    public List<SuperHero> findBySuperHeroName(@Param("superHeroName") String superHeroName);
+    public Optional<SuperHero> findBySuperHeroName(@Param("superHeroName") String superHeroName);
 
 }
