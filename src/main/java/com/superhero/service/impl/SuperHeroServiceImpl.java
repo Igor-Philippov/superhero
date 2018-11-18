@@ -32,16 +32,14 @@ public class SuperHeroServiceImpl implements SuperHeroService {
 	}
 	
 	@Override
-	public SuperHero retrieveSuperHeroById(Long id) {
+	public Optional<SuperHero> retrieveSuperHeroById(Long id) {
 		logger.debug("CALLING retrieveSuperHeroById(" + id + ")");
-		Optional<SuperHero> superHero = superHeroRepository.findById(id);
-		return superHero.isPresent() ? superHero.get() : null;
+		return superHeroRepository.findById(id);
 	}
 	
 	@Override
-	public SuperHero retrieveSuperHerosBySuperHeroName(String superHeroName) {
-		Optional<SuperHero> superHero = superHeroRepository.findBySuperHeroName(superHeroName);
-		return superHero.isPresent() ? superHero.get() : null;
+	public Optional<SuperHero> retrieveSuperHerosBySuperHeroName(String superHeroName) {
+		return superHeroRepository.findBySuperHeroName(superHeroName);
 	}
 	
 	@Override
@@ -74,17 +72,21 @@ public class SuperHeroServiceImpl implements SuperHeroService {
 	}
 	
 	@Override
-	public Mission retrieveMissionById(Long id) {
-		logger.debug("CALLING retrieveSuperHeroById(" + id + ")");
-		Optional<Mission> mission = missionRepository.findById(id);
-		return mission.isPresent() ? mission.get() : null;
+	public void softDeleteMission(Long id) {
+		logger.debug("CALLING softDeleteMission(" + id + ")");
+		missionRepository.softDeleteById(id);
 	}
 	
 	@Override
-	public Mission retrieveMissionByName(String name) {
+	public Optional<Mission> retrieveMissionById(Long id) {
+		logger.debug("CALLING retrieveMissionById(" + id + ")");
+		return missionRepository.findById(id);
+	}
+	
+	@Override
+	public Optional<Mission> retrieveMissionByName(String name) {
 		logger.debug("CALLING retrieveMissionByName(" + name + ")");
-		Optional<Mission> mission = missionRepository.findByName(name);
-		return mission.isPresent() ? mission.get() : null;
+		return missionRepository.findByName(name);
 	}
 		
 	@Override

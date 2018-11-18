@@ -1,6 +1,7 @@
 package com.superhero.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.superhero.model.Mission;
 import com.superhero.model.SuperHero;
@@ -9,9 +10,9 @@ public interface SuperHeroService {
 	
 	public SuperHero saveSuperHero(SuperHero superHero);
 	
-	public SuperHero retrieveSuperHeroById(Long id);
+	public Optional<SuperHero> retrieveSuperHeroById(Long id);
 	
-	public SuperHero retrieveSuperHerosBySuperHeroName(String superHeroName);
+	public Optional<SuperHero> retrieveSuperHerosBySuperHeroName(String superHeroName);
 	
 	public List<SuperHero> retrieveSuperHerosByFirstName(String firstName);
 	
@@ -24,9 +25,11 @@ public interface SuperHeroService {
 	
 	public Mission saveMission(Mission mission);
 	
-	public Mission retrieveMissionById(Long id);
+	public void softDeleteMission(Long id);
 	
-	public Mission retrieveMissionByName(String name);
+	public Optional<Mission> retrieveMissionById(Long id);
+	
+	public Optional<Mission> retrieveMissionByName(String name);
 		
 	public List<Mission> retrieveAllMissions();
 	

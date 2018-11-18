@@ -18,9 +18,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /** An entity class which contains the information on a mission. */
-@Entity
+@Entity(name = "Mission")
 @Table(name = "shc_mission")
 public class Mission implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -78,6 +79,7 @@ public class Mission implements Serializable {
 		this.isCompleted = isCompleted;
 	}
 
+	@JsonIgnore
 	public boolean isDeleted() {
 		return isDeleted;
 	}

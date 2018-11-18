@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.superhero.exception.MissionNotFoundException;
-import com.superhero.exception.MissionUnprocessableException;
 import com.superhero.exception.SuperHeroNotFoundException;
 import com.superhero.model.Mission;
 import com.superhero.model.SuperHero;
@@ -39,20 +38,16 @@ public class SuperHeroController {
 	
 	@GetMapping("/superheros/{id}")
 	public ResponseEntity<SuperHero> retrieveSuperHeroById(@PathVariable Long id) {
-	    return Optional.ofNullable( superHeroService.retrieveSuperHeroById(id) )
+	    return superHeroService.retrieveSuperHeroById(id)
 	            .map( superHero -> ResponseEntity.ok().body(superHero) )     //200 OK
 	            .orElseThrow( () -> new SuperHeroNotFoundException("No registered Super Hero with ID = " + id)); //404 Not found
 	}
 	
 	@GetMapping("/superheros/names/superhero/{superHeroName}")
 	public ResponseEntity<SuperHero> retrieveSuperHeroBySuperHeroName(@PathVariable String superHeroName) {
-		SuperHero superHero = superHeroService.retrieveSuperHerosBySuperHeroName(superHeroName);
-		if (superHero != null) {
-			return ResponseEntity.ok().body(superHero);   //200 OK
-		}
-		else {
-			throw new SuperHeroNotFoundException("No registered Super Hero by a superHeroName = " + superHeroName); //404 Not found
-		}
+	    return superHeroService.retrieveSuperHerosBySuperHeroName(superHeroName)
+	            .map( superHero -> ResponseEntity.ok().body(superHero) )     //200 OK
+	            .orElseThrow( () -> new SuperHeroNotFoundException("No registered Super Hero by a superHeroName = " + superHeroName)); //404 Not found
 	}
 	
 	@GetMapping("/superheros/names/first/{firstName}")
@@ -73,11 +68,11 @@ public class SuperHeroController {
 
     @PutMapping("/superheros/{id}")
 	public ResponseEntity<SuperHero> updateSuperHero(@RequestBody SuperHero superHero, @PathVariable Long id) {
-		SuperHero superHeroSaved = superHeroService.retrieveSuperHeroById(id);
-		if (superHeroSaved != null) {
+		Optional<SuperHero> superHeroSaved = superHeroService.retrieveSuperHeroById(id);
+		if (superHeroSaved.isPresent()) {
 			superHero.setId(id);
 			// Requirements: [Unable to remove a completed mission]
-			for (Mission missionToKeep : superHeroSaved.getMissions().stream().filter(mission -> mission.isCompleted()).collect(Collectors.toList())) {
+			for (Mission missionToKeep : superHeroSaved.get().getMissions().stream().filter(mission -> mission.isCompleted()).collect(Collectors.toList())) {
 				boolean isFound = false;
 				for (Mission missionForUpdate : superHero.getMissions()) {
 					if (missionForUpdate.getId().equals(missionToKeep.getId()) || missionForUpdate.getName().equalsIgnoreCase(missionToKeep.getName())) {
@@ -113,12 +108,19 @@ public class SuperHeroController {
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMission.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
-	
+
 	@GetMapping("/missions/{id}")
 	public ResponseEntity<Mission> retrieveMissionById(@PathVariable Long id) {
-	    return Optional.ofNullable( superHeroService.retrieveMissionById(id) )
+	    return superHeroService.retrieveMissionById(id)
 	            .map( mission -> ResponseEntity.ok().body(mission) )     //200 OK
 	            .orElseThrow( () -> new MissionNotFoundException("No registered Mission with ID = " + id)); //404 Not found
+	}
+	
+	@GetMapping("/missions/name/{name}")
+	public ResponseEntity<Mission> retrieveMissionByName(@PathVariable String name) {
+	    return superHeroService.retrieveMissionByName(name)
+	            .map( mission -> ResponseEntity.ok().body(mission) )     //200 OK
+	            .orElseThrow( () -> new MissionNotFoundException("No registered Mission with name = " + name)); //404 Not found
 	}
 		
 	@GetMapping("/missions/completed")
@@ -138,8 +140,7 @@ public class SuperHeroController {
 	
 	@PutMapping("/missions/{id}")
 	public ResponseEntity<Mission> updateMission(@RequestBody Mission mission, @PathVariable Long id) {
-		Mission presentMission = superHeroService.retrieveMissionById(id);
-		if (presentMission != null) {
+		if (superHeroService.retrieveMissionById(id).isPresent()) {
 			mission.setId(id);
 			superHeroService.saveMission(mission);
 			return ResponseEntity.ok().build();
@@ -149,18 +150,11 @@ public class SuperHeroController {
 		}
 	}
 
-	@DeleteMapping("/missions/softdelete/{id}")
+	@DeleteMapping("/missions/{id}")
 	ResponseEntity<ResourceSupport> softDeleteMission(@PathVariable Long id) {	
-		Mission mission = superHeroService.retrieveMissionById(id);
-		if (mission != null) {
-			if (mission.isDeleted() == false) {
-				mission.setDeleted(true);
-				superHeroService.saveMission(mission);
-				return ResponseEntity.noContent().build();
-			}
-			else {
-				throw new MissionUnprocessableException("Mission with ID = " + id + " is already soft deleted");
-			}
+		if (superHeroService.retrieveMissionById(id).isPresent()) {
+			superHeroService.softDeleteMission(id);
+			return ResponseEntity.noContent().build();
 		}
 		else {
 			throw new MissionNotFoundException("No registered Mission with ID = " + id);
