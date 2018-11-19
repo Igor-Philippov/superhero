@@ -1,0 +1,33 @@
+{
+  "type": "array",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "minItems": 1,
+  "uniqueItems": true,
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "firstName",
+      "lastName",
+      "superHeroName"
+    ],
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "firstName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "lastName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "superHeroName": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
