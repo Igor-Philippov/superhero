@@ -2,7 +2,7 @@ This is simple API create with support of Spring Boot, Maven and Java.
 
 ### To run application follow this steps:
  1. Install MySQL (if you have it already ignore this step)
- 2. Create database BlazeDemo
+ 2. Create database [super_hero_company]
  3. In file src/main/resources/application.yml fill in username and password with credentials of your DB
  4. Execute src/main/resources/add_tables.sql file to create tables with test data
  5. In command line cd to project root and execute: mvn clean install -DskipTests
