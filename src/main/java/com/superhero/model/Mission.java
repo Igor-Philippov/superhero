@@ -18,7 +18,9 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** An entity class which contains the information on a mission. */
 @Entity(name = "Mission")
@@ -48,10 +50,12 @@ public class Mission implements Serializable {
     @JsonBackReference
 	private List<SuperHero> superHeros = new ArrayList<>();
 
+    @JsonCreator
 	public Mission() {
 	}
 	
-	public Mission(String name) {
+    @JsonCreator
+	public Mission(@JsonProperty("name") String name) {
 		this.name = name;
 	}
 		

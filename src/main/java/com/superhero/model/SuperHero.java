@@ -19,7 +19,9 @@ import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.annotations.Where;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "shc_super_hero")
@@ -51,14 +53,29 @@ public class SuperHero implements Serializable {
     @JsonManagedReference
 	private List<Mission> missions = new ArrayList<>();
 	
+    @JsonCreator
 	public SuperHero() {
 	}
 	
-    public SuperHero(String firstName, String lastName, String superHeroName) {
+    @JsonCreator
+	public SuperHero(@JsonProperty("firstname") String firstName,
+	                 @JsonProperty("lastname") String lastName, 
+	                 @JsonProperty("superheroname") String superHeroName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.superHeroName = superHeroName;
     }
+    
+	@JsonCreator
+	public SuperHero(@JsonProperty("id") Long id, 
+			         @JsonProperty("firstname") String firstName,
+			         @JsonProperty("lastname") String lastName, 
+			         @JsonProperty("superheroname") String superHeroName,
+			         @JsonProperty("missions") List<Mission> missions) {
+		this(firstName, lastName, superHeroName);
+		this.id = id;
+		this.missions = missions;
+	}
 
 	public Long getId() {
 		return id;
