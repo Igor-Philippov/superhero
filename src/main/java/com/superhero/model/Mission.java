@@ -54,10 +54,10 @@ public class Mission implements Serializable {
 	public Mission() {
 	}
 	
-    @JsonCreator
-	public Mission(@JsonProperty("name") String name) {
-		this.name = name;
-	}
+//    @JsonCreator
+//	public Mission(@JsonProperty("name") String name) {
+//		this.name = name;
+//	}
 		
     public Long getId() {
 		return id;

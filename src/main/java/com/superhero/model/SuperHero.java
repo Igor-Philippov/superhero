@@ -57,25 +57,25 @@ public class SuperHero implements Serializable {
 	public SuperHero() {
 	}
 	
-    @JsonCreator
-	public SuperHero(@JsonProperty("firstname") String firstName,
-	                 @JsonProperty("lastname") String lastName, 
-	                 @JsonProperty("superheroname") String superHeroName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.superHeroName = superHeroName;
-    }
-    
-	@JsonCreator
-	public SuperHero(@JsonProperty("id") Long id, 
-			         @JsonProperty("firstname") String firstName,
-			         @JsonProperty("lastname") String lastName, 
-			         @JsonProperty("superheroname") String superHeroName,
-			         @JsonProperty("missions") List<Mission> missions) {
-		this(firstName, lastName, superHeroName);
-		this.id = id;
-		this.missions = missions;
-	}
+//    @JsonCreator
+//	public SuperHero(@JsonProperty("firstname") String firstName,
+//	                 @JsonProperty("lastname") String lastName, 
+//	                 @JsonProperty("superheroname") String superHeroName) {
+//        this.firstName = firstName;
+//        this.lastName = lastName;
+//        this.superHeroName = superHeroName;
+//    }
+//    
+//	@JsonCreator
+//	public SuperHero(@JsonProperty("id") Long id, 
+//			         @JsonProperty("firstname") String firstName,
+//			         @JsonProperty("lastname") String lastName, 
+//			         @JsonProperty("superheroname") String superHeroName,
+//			         @JsonProperty("missions") List<Mission> missions) {
+//		this(firstName, lastName, superHeroName);
+//		this.id = id;
+//		this.missions = missions;
+//	}
 
 	public Long getId() {
 		return id;
