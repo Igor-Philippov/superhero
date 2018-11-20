@@ -23,7 +23,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.superhero.exception.MissionNotFoundException;
 import com.superhero.model.Mission;
-import com.superhero.model.SuperHero;
 import com.superhero.service.SuperHeroService;
 
 import io.swagger.annotations.ApiOperation;
@@ -35,23 +34,12 @@ public class MissionController {
 	private SuperHeroService superHeroService;
 	
 	@ApiOperation(value = "Create a mission")
-	@PostMapping(MISSIONS)
-	public ResponseEntity<SuperHero> createMission(@RequestBody Mission mission) {
+	@PostMapping(value = MISSIONS)
+	public ResponseEntity<Mission> createMission(@RequestBody Mission mission) {
 		Mission savedMission = superHeroService.saveMission(mission);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMission.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
-	
-//	@GetMapping("/employees/{id}")
-//	Resource<Employee> one(@PathVariable Long id) {
-//
-//		Employee employee = repository.findById(id)
-//			.orElseThrow(() -> new EmployeeNotFoundException(id));
-//
-//		return new Resource<>(employee,
-//			linkTo(methodOn(EmployeeController.class).one(id)).withSelfRel(),
-//			linkTo(methodOn(EmployeeController.class).all()).withRel("employees"));
-//	}
 
 	@ApiOperation(value = "Retrieve a mission by ID")
 	@GetMapping(MISSION_BY_ID)
@@ -81,40 +69,15 @@ public class MissionController {
 		return superHeroService.retrieveAllMissionsDeleted();
 	}
 	
-//	@GetMapping("/employees")
-//	Resources<Resource<Employee>> all() {
-//
-//		List<Resource<Employee>> employees = repository.findAll().stream()
-//			.map(employee -> new Resource<>(employee,
-//				linkTo(methodOn(EmployeeController.class).one(employee.getId())).withSelfRel(),
-//				linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
-//			.collect(Collectors.toList());
-//
-//		return new Resources<>(employees,
-//			linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
-//	}
-	
 	@ApiOperation(value = "Retrieve all missions")
 	@GetMapping(MISSIONS)
 	public List<Mission> retrieveAllMissions() {
 		return superHeroService.retrieveAllMissions();
 	}
 	
-//	@PutMapping("/missions/{id}")
-//	public ResponseEntity<Mission> updateMission(@RequestBody Mission mission, @PathVariable Long id) {
-//		if (superHeroService.retrieveMissionById(id).isPresent()) {
-//			mission.setId(id);
-//			superHeroService.saveMission(mission);
-//			return ResponseEntity.ok().build();
-//		}
-//		else {
-//			throw new MissionNotFoundException("No registered Mission with ID = " + id + " available for update");
-//		}
-//	}
-	
 	@PutMapping(MISSION_BY_ID)
 	@ApiOperation(value = "Update a mission")
-	Mission updateMission(@RequestBody Mission newMission, @PathVariable Long id) {
+	public Mission updateMission(@RequestBody Mission newMission, @PathVariable Long id) {
 
 		return superHeroService.retrieveMissionById(id)
 			.map(mission -> {
@@ -127,25 +90,10 @@ public class MissionController {
 				return superHeroService.saveMission(newMission);
 			});
 	}
-	
-//	@PutMapping("/employees/{id}")
-//	Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
-//
-//		return repository.findById(id)
-//			.map(employee -> {
-//				employee.setName(newEmployee.getName());
-//				employee.setRole(newEmployee.getRole());
-//				return repository.save(employee);
-//			})
-//			.orElseGet(() -> {
-//				newEmployee.setId(id);
-//				return repository.save(newEmployee);
-//			});
-//	}
 
 	@ApiOperation(value = "Delete a mission by ID")
 	@DeleteMapping(MISSION_BY_ID)
-	ResponseEntity<ResourceSupport> softDeleteMission(@PathVariable Long id) {	
+	public ResponseEntity<ResourceSupport> softDeleteMission(@PathVariable Long id) {	
 		if (superHeroService.retrieveMissionById(id).isPresent()) {
 			superHeroService.softDeleteMission(id);
 			return ResponseEntity.noContent().build();

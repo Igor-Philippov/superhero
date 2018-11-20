@@ -101,7 +101,7 @@ public class SuperHeroController {
 	}
 	
 	@DeleteMapping(SUPERHERO_BY_ID)
-	ResponseEntity<Void> deleteSuperHero(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteSuperHero(@PathVariable Long id) {
 		superHeroService.deleteSuperHeroById(id);
 		return ResponseEntity.noContent().build();
 	}
