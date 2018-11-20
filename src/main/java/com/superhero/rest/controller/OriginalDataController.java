@@ -20,8 +20,8 @@ import com.superhero.repository.OriginalDataRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Controller
-@RequestMapping(value = VERSION + OD)
+//@Controller
+//@RequestMapping(value = VERSION + OD)
 //@Api(value = VERSION + OD)
 public class OriginalDataController {
 
