@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping(value = VERSION + OD)
-@Api(value = VERSION + OD)
+//@Api(value = VERSION + OD)
 public class OriginalDataController {
 
     @Autowired

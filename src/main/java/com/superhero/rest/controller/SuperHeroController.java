@@ -5,6 +5,7 @@ import static com.superhero.rest.constant.Paths.SUPERHEROS_BY_FIRSTNAME;
 import static com.superhero.rest.constant.Paths.SUPERHEROS_BY_LASTNAME;
 import static com.superhero.rest.constant.Paths.SUPERHERO_BY_ID;
 import static com.superhero.rest.constant.Paths.SUPERHERO_BY_SUPERHERONAME;
+import static com.superhero.rest.constant.Paths.VERSION;
 
 import java.net.URI;
 import java.util.List;
@@ -27,7 +28,10 @@ import com.superhero.model.Mission;
 import com.superhero.model.SuperHero;
 import com.superhero.service.SuperHeroService;
 
+import io.swagger.annotations.Api;
+
 @RestController
+@Api(value = VERSION + SUPERHEROS)
 public class SuperHeroController {
 	
 	@Autowired
