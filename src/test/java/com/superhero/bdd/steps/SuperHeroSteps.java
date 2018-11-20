@@ -9,10 +9,10 @@ import com.superhero.bdd.SuperHeroFeatureTest;
 import cucumber.api.java.en.When;
 
 public class SuperHeroSteps extends SuperHeroFeatureTest {
-    private static final Logger LOGGER = getLogger(SuperHeroSteps.class);
+    private static final Logger logger = getLogger(SuperHeroSteps.class);
 
-    @When("^User gets one user by id (\\d+)$")
-    public void userGetsOneUserById(int id) throws Throwable {
-        LOGGER.info("When - User gets one user by id [{}]", id);
+    @When("^User gets one super hero by id (\\d+)$")
+    public void userGetsOneSuperHeroById(int id) throws Throwable {
+    	logger.info("When - User gets one super hero by id [{}]", id);
     }
 }

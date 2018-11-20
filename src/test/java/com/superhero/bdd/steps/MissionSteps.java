@@ -10,10 +10,10 @@ import cucumber.api.java.en.When;
 
 public class MissionSteps extends SuperHeroFeatureTest {
 
-    private static final Logger LOGGER = getLogger(MissionSteps.class);
+    private static final Logger logger = getLogger(MissionSteps.class);
 
-    @When("^User gets one* arrival by id (\\d+)$")
-    public void userGetsOneArrivalById(int id) throws Throwable {
-        LOGGER.info("When - User gets one arrival by id [{}]", id);
+    @When("^User gets one* mission by id (\\d+)$")
+    public void userGetsOneMissionById(int id) throws Throwable {
+        logger.info("When - User gets one mission by id [{}]", id);
     }
 }
