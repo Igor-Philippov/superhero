@@ -38,7 +38,10 @@ public class SuperHeroRepositoryTest {
 
     @Before
     public void setUp() {
-    	superHero = new SuperHero("firstName", "lastName", "superHeroName");
+    	superHero = new SuperHero();
+    	superHero.setFirstName("firstName");
+    	superHero.setLastName("lastName");
+    	superHero.setSuperHeroName("superHeroName");
     }
 
     @Test
@@ -73,8 +76,12 @@ public class SuperHeroRepositoryTest {
     @Test
     public void findSuperHeroBySuperHeroName() {
         //given
-    	SuperHero superHero = new SuperHero("firstName10", "lastName10", "superHeroName10");
-    	Mission mission = new Mission("MISSION_FOR_superHeroName10");
+    	SuperHero superHero = new SuperHero();
+    	superHero.setFirstName("firstName10");
+    	superHero.setLastName("lastName10");
+    	superHero.setSuperHeroName("superHeroName10");
+    	Mission mission = new Mission();
+    	mission.setName("MISSION_FOR_superHeroName10");
         mission.setCompleted(true);
         entityManager.persist(mission);
         entityManager.flush();
@@ -95,14 +102,21 @@ public class SuperHeroRepositoryTest {
     @Test
     public void findSuperHerosByFirstName() {
         //given
-    	Mission mission = new Mission("MISSION_FOR_NameX");
+    	Mission mission = new Mission();
+    	mission.setName("MISSION_FOR_NameX");
         entityManager.persist(mission);
         entityManager.flush();
     	
-    	SuperHero superHeroA1 = new SuperHero("firstNameA", "lastNameA", "superHeroNameA1");
+    	SuperHero superHeroA1 = new SuperHero();
+    	superHeroA1.setFirstName("firstNameA");
+    	superHeroA1.setLastName("lastNameA");
+    	superHeroA1.setSuperHeroName("superHeroNameA1");
     	superHeroA1.addMission(mission);
     	
-    	SuperHero superHeroA2 = new SuperHero("FIRSTNameA", "LAStNameA", "superHeroNameA2");
+    	SuperHero superHeroA2 = new SuperHero();
+    	superHeroA2.setFirstName("FIRSTNameA");
+    	superHeroA2.setLastName("LAStNameA");
+    	superHeroA2.setSuperHeroName("superHeroNameA2");
     	superHeroA2.addMission(mission);
     	
         entityManager.persistAndFlush(superHeroA1);
@@ -120,8 +134,14 @@ public class SuperHeroRepositoryTest {
     @Test
     public void findSuperHerosByLastName() {
         //given   	
-    	SuperHero superHeroB1 = new SuperHero("firstNameB1", "lastNameB", "superHeroNameB1");
-    	SuperHero superHeroB2 = new SuperHero("firstNameB2", "LASTNAMEb", "superHeroNameB2");
+    	SuperHero superHeroB1 = new SuperHero();
+    	superHeroB1.setFirstName("firstNameB1");
+    	superHeroB1.setLastName("lastNameB");
+    	superHeroB1.setSuperHeroName("superHeroNameB1");
+    	SuperHero superHeroB2 = new SuperHero();
+    	superHeroB2.setFirstName("firstNameB2");
+    	superHeroB2.setLastName("LASTNAMEb");
+    	superHeroB2.setSuperHeroName("superHeroNameB2");
     	
         entityManager.persistAndFlush(superHeroB1);
         entityManager.persistAndFlush(superHeroB1);

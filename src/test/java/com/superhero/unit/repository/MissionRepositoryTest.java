@@ -6,22 +6,16 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.superhero.model.Mission;
-import com.superhero.model.SuperHero;
 import com.superhero.repository.MissionRepository;
 
 @ActiveProfiles("test")
@@ -39,7 +33,8 @@ public class MissionRepositoryTest {
     @Test
     public void softDeleteById() {
         //given
-        Mission mission = new Mission("Mission05");
+        Mission mission = new Mission();
+        mission.setName("Mission05");
         mission.setCompleted(true);
         entityManager.persist(mission);
         entityManager.flush();
@@ -63,7 +58,8 @@ public class MissionRepositoryTest {
     @Test
     public void findByIdAndNotSoftDeleted() {
         //given
-        Mission mission = new Mission("Mission10");
+        Mission mission = new Mission();
+        mission.setName("Mission10");
         mission.setCompleted(true);
         entityManager.persist(mission);
         entityManager.flush();
@@ -78,7 +74,8 @@ public class MissionRepositoryTest {
     @Test
     public void findByIdAndSoftDeleted() {
         //given
-        Mission mission = new Mission("Mission11");
+        Mission mission = new Mission();
+        mission.setName("Mission11");
         mission.setCompleted(true);
         mission.setDeleted(true);
         entityManager.persist(mission);
@@ -100,7 +97,8 @@ public class MissionRepositoryTest {
     @Test
     public void findByNameAndNotSoftDeleted() {
         //given
-        Mission mission = new Mission("Mission14");
+        Mission mission = new Mission();
+        mission.setName("Mission14");
         mission.setCompleted(true);
         entityManager.persist(mission);
         entityManager.flush();
@@ -115,7 +113,8 @@ public class MissionRepositoryTest {
     @Test
     public void findByNameAndSoftDeleted() {
         //given
-        Mission mission = new Mission("Mission15");
+        Mission mission = new Mission();
+        mission.setName("Mission15");
         mission.setCompleted(true);
         mission.setDeleted(true);
         entityManager.persist(mission);
@@ -137,12 +136,14 @@ public class MissionRepositoryTest {
     @Test
     public void findAll() {
         //given
-        Mission mission20 = new Mission("Mission20");
+        Mission mission20 = new Mission();
+        mission20.setName("Mission20");
         mission20.setCompleted(true);
         entityManager.persist(mission20);
         entityManager.flush();
         
-        Mission mission21 = new Mission("Mission21");
+        Mission mission21 = new Mission();
+        mission21.setName("Mission21");
         mission21.setCompleted(true);
         mission21.setDeleted(true);
         entityManager.persist(mission21);
@@ -159,12 +160,14 @@ public class MissionRepositoryTest {
     @Test
     public void findAllCompleted() {
         //given
-        Mission mission40 = new Mission("Mission40");
+        Mission mission40 = new Mission();
+        mission40.setName("Mission40");
         mission40.setCompleted(true);
         entityManager.persist(mission40);
         entityManager.flush();
         
-        Mission mission41 = new Mission("Mission41");
+        Mission mission41 = new Mission();
+        mission41.setName("Mission41");
         mission41.setCompleted(false);
         entityManager.persist(mission41);
         entityManager.flush();
