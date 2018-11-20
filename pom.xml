@@ -22,6 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<docker.image.prefix>igor.philippov</docker.image.prefix>
 	</properties>
 
 	<dependencies>
@@ -67,6 +68,11 @@
             <version>2.9.2</version>
         </dependency>
         <dependency>
+		<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+        <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>3.0.3</version>
@@ -82,10 +88,16 @@
 		    <artifactId>jackson-datatype-hibernate4</artifactId>
 		    <version>2.4.2</version>
 		</dependency>
-<!--         <dependency> -->
-<!--             <groupId>org.springframework.boot</groupId> -->
-<!--             <artifactId>spring-boot-starter-security</artifactId> -->
-<!--         </dependency> -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-test</artifactId>
+<!-- 		    <version>5.1.1.RELEASE</version> -->
+		    <scope>test</scope>
+		</dependency> 
 		<dependency>
 		    <groupId>org.seleniumhq.selenium</groupId>
 		    <artifactId>selenium-java</artifactId>
@@ -104,11 +116,12 @@
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
-		<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.4.0</version>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-all</artifactId>
+		    <version>1.9.5</version>
+		    <scope>test</scope>
 		</dependency>
-		
+				
 	</dependencies>
 
 	<build>
@@ -117,8 +130,15 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+		    <plugin> 
+		        <groupId>com.spotify</groupId> 
+		        <artifactId>dockerfile-maven-plugin</artifactId> 
+		        <version>1.3.6</version> 
+		        <configuration> 
+		            <repository>${docker.image.prefix}/${project.artifactId}</repository> 
+		        </configuration> 
+		    </plugin> 
 		</plugins>
 	</build>
-
 
 </project>

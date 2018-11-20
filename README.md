@@ -5,7 +5,7 @@ This is simple API create with support of Spring Boot, Maven and Java.
  2. Create database BlazeDemo
  3. In file src/main/resources/application.yml fill in username and password with credentials of your DB
  4. Execute src/main/resources/add_tables.sql file to create tables with test data
- 5. In command line cd to project root and execute: mvn clean package
+ 5. In command line cd to project root and execute: mvn clean install -DskipTests
  6. Execute from command line via: java -jar target/SHC-0.0.1-SNAPSHOT.jar command
  7. Notes regarding killing a running Tomcat process on Windows
     7.1) Go to (Open) Command Prompt (Press Window + R then type cmd Run this).
