@@ -32,26 +32,26 @@ public abstract class BaseTest {
     /** superheros/ */
     protected static final String SUPERHEROS = "superheros";
     
-    /** superheros/{id} */
-    protected static final String SUPERHERO_BY_ID = SUPERHEROS + "/{id}";
+    /** superheros/1 */
+    protected static final String SUPERHERO_BY_ID = SUPERHEROS + "/1";
     
-    /** superheros/names/superhero/{superHeroName} */
-    protected static final String SUPERHERO_BY_SUPERHERONAME = SUPERHEROS + "/names/superhero/{superHeroName}";
+    /** superheros/names/superhero/superHeroName */
+    protected static final String SUPERHERO_BY_SUPERHERONAME = SUPERHEROS + "/names/superhero/superHeroName";
     
-    /** superheros/names/first/{firstName} */
-    protected static final String SUPERHEROS_BY_FIRSTNAME = SUPERHEROS + "/names/first/{firstName}";
+    /** superheros/names/first/firstName */
+    protected static final String SUPERHEROS_BY_FIRSTNAME = SUPERHEROS + "/names/first/firstName";
     
-    /** superheros/names/last/{lastName} */
-    protected static final String SUPERHEROS_BY_LASTNAME = SUPERHEROS + "/names/last/{lastName}";
+    /** superheros/names/last/lastName */
+    protected static final String SUPERHEROS_BY_LASTNAME = SUPERHEROS + "/names/last/lastName";
     
     /** missions/ */
     protected static final String MISSIONS = "missions";
 	
-    /** missions/{id} */
-    protected static final String MISSION_BY_ID = MISSIONS + "/{id}";
+    /** missions/1 */
+    protected static final String MISSION_BY_ID = MISSIONS + "/1";
     
-    /** missions/name/{name} */
-    protected static final String MISSION_BY_NAME = MISSIONS + "/name/{name}";
+    /** missions/name/name */
+    protected static final String MISSION_BY_NAME = MISSIONS + "/name/name";
     
     /** missions/completed/ */
     protected static final String MISSIONS_COMPLETED = MISSIONS + "/completed";
@@ -61,18 +61,10 @@ public abstract class BaseTest {
     
     protected static final String DUMMY_TEST_JSON = "{ \"Test\": \"Test\" }";
 
-//	static final String ARRIVAL_ALL = "arrival/all";
-//	static final String ARRIVAL_ALL_BY_ID = "arrival/1";
-//	static final String DEPARTURE_ALL = "departure/all";
-//	static final String DEPARTURE_ALL_BY_ID = "departure/1";
-//	static final String FLIGHT_ALL = "flight/all";
-//	static final String FLIGHT_ALL_BY_ID = "flight/1";
-//	static final String USERS_ALL = "users/all";
-//	static final String USERS_ALL_BY_ID = "users/1";
 	protected static final long ENDPOINT_RESPONSE_TIME = 200L;
 
 	private static final String USER_NAME = "blaze";
-	private static final String PASSWORD = "Q1w2e3r4";
+	private static final String PASSWORD = "shc_user";
 
 	protected ValidatableResponse prepareGet(String path) {
 		return prepareGetDeleteWhen().get(HOST_ROOT + path).then();
