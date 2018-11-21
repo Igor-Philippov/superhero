@@ -50,8 +50,8 @@ public class SuperHero implements Serializable {
 	               joinColumns = @JoinColumn(name = "sh_id"),
 	               inverseJoinColumns = @JoinColumn(name = "m_id"))
     @Where(clause="is_deleted = 0")
-    @JsonManagedReference
-	private List<Mission> missions = new ArrayList<>();
+    //@JsonManagedReference
+    private List<Mission> missions = new ArrayList<>();
 	
     @JsonCreator
 	public SuperHero() {
