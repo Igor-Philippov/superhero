@@ -10,7 +10,8 @@
       "id",
       "firstName",
       "lastName",
-      "superHeroName"
+      "superHeroName",
+      "missions"
     ],
     "properties": {
       "id": {
@@ -18,15 +19,19 @@
       },
       "firstName": {
         "type": "string",
-        "minLength": 1
+        "maxLength": 32
       },
       "lastName": {
         "type": "string",
-        "minLength": 1
+  		"maxLength": 64
       },
       "superHeroName": {
         "type": "string",
-        "minLength": 1
+  		"maxLength": 128
+      },
+      "missions": {
+        "type": "array",
+        "uniqueItems": true
       }
     }
   }
