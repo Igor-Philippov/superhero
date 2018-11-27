@@ -29,16 +29,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.role}")
     private String role;
 
-//    @Autowired
-//    public void configAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication().withUser(username).password(password).roles(role);
-//    }
-    
     @Autowired
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+    public void configAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
+    	
         BCryptPasswordEncoder encoder = passwordEncoder();
         auth.inMemoryAuthentication().withUser(username).password(encoder.encode(password)).roles(role);
     }
+    
+//    @Autowired
+//    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+//        BCryptPasswordEncoder encoder = passwordEncoder();
+//        auth.inMemoryAuthentication().withUser(username).password(encoder.encode(password)).roles(role);
+//    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
