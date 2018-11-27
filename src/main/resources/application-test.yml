@@ -1,0 +1,48 @@
+spring:
+    profiles: test
+    application:
+        name: shc
+    security:
+        username: shc_user  
+        password: password
+        role: ADMIN_TEST
+    datasource:
+        url: jdbc:mysql://localhost:3306/super_hero_company?useSSL=false
+        username: root
+        password: password
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        testWhileIdle: true
+        validationQuery: SELECT 1
+    jpa:
+        database: MYSQL
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+            jadira:
+                usertype:
+                    autoRegisterUserTypes: true
+server:
+    port: 8080
+
+logging:
+  file: logs/dev/dev-shc-api.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: INFO
+    com.superhero: INFO
+    org.hibernate: INFO
+
+info:
+    build:
+        artifact: shc-api
+        name: SuperHeroDemoAPI
+        title: SuperHero Spring Boot API
+        description: Spring Boot REST API for Superhero Co.
+        copyright: (C) 2018 Copyright Super Hero Co.
+        version: 1.0
