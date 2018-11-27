@@ -21,6 +21,13 @@ This is simple API create with support of Spring Boot, Maven and Java.
  1. Open terminal
  2. Execute: ./mvn test
  
+Test on the browser via SWAGGER
+-------------------
+
+```sh
+http://localhost:8080/swagger-ui.html
+```
+ 
 ### Test categories:
  1. Unit tests (src/test/com/demo/unit)
  2. Rest tests (src/test/com/demo/rest)
