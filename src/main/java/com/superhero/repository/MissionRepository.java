@@ -43,7 +43,8 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
      *          If no mission is found, this method returns an empty list.
      */
 	@Query("select e from #{#entityName} e where LOWER(e.name) = LOWER(:name) and e.isDeleted = 0")
-    public Optional<Mission> findByName(@Param("name") String name);
+	public List<Mission> findByName(@Param("name") String name);
+    //public Optional<Mission> findByName(@Param("name") String name);
     
     /**
      * Finds all completed missions excluding soft deleted ones.
