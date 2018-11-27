@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import static javax.persistence.FetchType.*;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -20,7 +24,6 @@ import org.hibernate.annotations.Where;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** An entity class which contains the information on a mission. */
 @Entity(name = "Mission")
@@ -33,8 +36,9 @@ public class Mission implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
     
-	@NaturalId
-	@Column(name = "name", nullable = false, length = 255, unique = true)
+	//@NaturalId
+	@Column(name = "name", nullable = false, length = 255, unique = false)
+	//@Column(name = "name", nullable = false, length = 255, unique = true)
 	private String name;
 	
 	@Column(name = "is_completed", nullable = false, columnDefinition = "bit default 0")
@@ -48,6 +52,12 @@ public class Mission implements Serializable {
     @ManyToMany(mappedBy = "missions")
     @Where(clause="is_deleted = 0")
     @JsonBackReference
+	
+// SASHA
+//	@ManyToMany(fetch = LAZY, cascade = { DETACH, MERGE, REFRESH, PERSIST }, targetEntity = SuperHero.class)
+//	@JoinTable(name = "shc_super_hero_mission", joinColumns = @JoinColumn(name = "m_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "sh_id", referencedColumnName = "id"))
+//	@Where(clause="is_deleted = 0")
+//	@JsonBackReference
 	private List<SuperHero> superHeros = new ArrayList<>();
 
     @JsonCreator
@@ -99,19 +109,32 @@ public class Mission implements Serializable {
 	public void setSuperHeros(List<SuperHero> superHeros) {
 		this.superHeros = superHeros;
 	}
-
+	
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Mission other = (Mission) o;
-        return Objects.equals(name, other.name);
+        return Objects.equals(id, other.id);
     }
 	
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
+
+//	@Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Mission other = (Mission) o;
+//        return Objects.equals(name, other.name);
+//    }
+//	
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(name);
+//    }
 	
 	@Override
 	public String toString() {

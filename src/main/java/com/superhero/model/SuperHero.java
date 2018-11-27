@@ -1,11 +1,13 @@
 package com.superhero.model;
 
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +22,6 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -45,27 +46,33 @@ public class SuperHero implements Serializable {
     @Column(name="name_superhero", nullable=false, length=128, unique=true)
 	private String superHeroName;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-        @JoinTable(name = "shc_super_hero_mission", 
-	               joinColumns = @JoinColumn(name = "sh_id"),
-	               inverseJoinColumns = @JoinColumn(name = "m_id"))
+    @ManyToMany(cascade = { PERSIST, MERGE })
+        @JoinTable(name = "shc_super_hero_mission", joinColumns = @JoinColumn(name = "sh_id"), inverseJoinColumns = @JoinColumn(name = "m_id"))
     @Where(clause="is_deleted = 0")
-    //@JsonManagedReference
-    private List<Mission> missions = new ArrayList<>();
+    ////@JsonManagedReference
+    
+//    //SASHA
+//	@ManyToMany(cascade = { PERSIST }, targetEntity = Mission.class, fetch = EAGER)
+//	@JoinTable(name = "shc_super_hero_mission", 
+//	           joinColumns = @JoinColumn(name = "sh_id", referencedColumnName = "id"), 
+//	           inverseJoinColumns = @JoinColumn(name = "m_id", referencedColumnName = "id"))
+//	@Where(clause="is_deleted = 0")
+//	@JsonManagedReference
+	private List<Mission> missions = new ArrayList<>();
 	
     @JsonCreator
 	public SuperHero() {
 	}
 	
-//    @JsonCreator
-//	public SuperHero(@JsonProperty("firstname") String firstName,
-//	                 @JsonProperty("lastname") String lastName, 
-//	                 @JsonProperty("superheroname") String superHeroName) {
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.superHeroName = superHeroName;
-//    }
-//    
+    @JsonCreator
+	public SuperHero(@JsonProperty("firstName") String firstName,
+	                 @JsonProperty("lastName") String lastName, 
+	                 @JsonProperty("superHeroName") String superHeroName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.superHeroName = superHeroName;
+    }
+    
 //	@JsonCreator
 //	public SuperHero(@JsonProperty("id") Long id, 
 //			         @JsonProperty("firstname") String firstName,
