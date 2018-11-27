@@ -40,7 +40,7 @@ public class MissionController {
 	private SuperHeroService superHeroService;
 	
 	@ApiOperation(value = "Create a mission")
-	@PostMapping(value = MISSIONS)
+	@PostMapping(MISSIONS)
 	public ResponseEntity<Mission> createMission(@RequestBody Mission mission) {
 		Mission savedMission = superHeroService.saveMission(mission);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMission.getId()).toUri();
@@ -55,12 +55,17 @@ public class MissionController {
 	            .orElseThrow( () -> new MissionNotFoundException("No registered Mission with ID = " + id)); //404 Not found
 	}
 	
+//	@ApiOperation(value = "Retrieve a mission by name")
+//	@GetMapping(MISSION_BY_NAME)
+//	public ResponseEntity<Mission> retrieveMissionByName(@PathVariable String name) {
+//	    return superHeroService.retrieveMissionByName(name)
+//	            .map( mission -> ResponseEntity.ok().body(mission) )     //200 OK
+//	            .orElseThrow( () -> new MissionNotFoundException("No registered Mission with name = " + name)); //404 Not found
+//	}
 	@ApiOperation(value = "Retrieve a mission by name")
 	@GetMapping(MISSION_BY_NAME)
-	public ResponseEntity<Mission> retrieveMissionByName(@PathVariable String name) {
-	    return superHeroService.retrieveMissionByName(name)
-	            .map( mission -> ResponseEntity.ok().body(mission) )     //200 OK
-	            .orElseThrow( () -> new MissionNotFoundException("No registered Mission with name = " + name)); //404 Not found
+	public List<Mission> retrieveMissionByName(@PathVariable String name) {
+	    return superHeroService.retrieveMissionByName(name);
 	}
     
 	@ApiOperation(value = "Retrieve all completeed missions")
@@ -105,7 +110,7 @@ public class MissionController {
 			return ResponseEntity.noContent().build();
 		}
 		else {
-			throw new MissionNotFoundException("No registered Mission with ID = " + id);
+			throw new MissionNotFoundException("No registered for deletion Mission with ID = " + id);
 		}
 	}
 }
