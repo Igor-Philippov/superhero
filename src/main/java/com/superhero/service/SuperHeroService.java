@@ -29,7 +29,8 @@ public interface SuperHeroService {
 	
 	public Optional<Mission> retrieveMissionById(Long id);
 	
-	public Optional<Mission> retrieveMissionByName(String name);
+	//public Optional<Mission> retrieveMissionByName(String name);
+	public List<Mission> retrieveMissionByName(String name);
 		
 	public List<Mission> retrieveAllMissions();
 	

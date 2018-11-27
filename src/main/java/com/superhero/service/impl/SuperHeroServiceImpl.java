@@ -83,8 +83,13 @@ public class SuperHeroServiceImpl implements SuperHeroService {
 		return missionRepository.findById(id);
 	}
 	
+//	@Override
+//	public Optional<Mission> retrieveMissionByName(String name) {
+//		logger.debug("CALLING retrieveMissionByName(" + name + ")");
+//		return missionRepository.findByName(name);
+//	}
 	@Override
-	public Optional<Mission> retrieveMissionByName(String name) {
+	public List<Mission> retrieveMissionByName(String name) {
 		logger.debug("CALLING retrieveMissionByName(" + name + ")");
 		return missionRepository.findByName(name);
 	}
