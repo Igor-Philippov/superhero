@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A hypotetical super hero",
+  "title": "SuperHero",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The ID of superhero",
+      "type": "number"
+    },
+    "firstName": {
+      "description": "The first name of superhero",
+      "type": "string",
+      "maxLength": 32
+    },
+    "lastName": {
+      "description": "The last name of superhero",
+      "type": "string",
+      "maxLength": 64
+    },
+    "superHeroName": {
+      "description": "The superhero name (nickname) of superhero",
+      "type": "string",
+      "maxLength": 128
+    },
+    "missions": {
+      "description": "The list of mission assignable to a superhero",
+      "type": "array",
+      "uniqueItems": true,
+	  "items": { "$ref": "#/definitions/mission" }
+    }
+  },
+  "definitions": {
+    "mission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The ID of mission",
+          "type": "number"
+        },
+        "name": {
+          "description": "The name of mission",
+          "type": "string",
+          "maxLength": 255
+        },
+        "completed": {
+          "description": "Indicates whether the mission is completed",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
