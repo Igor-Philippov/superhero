@@ -6,9 +6,9 @@ import static com.superhero.rest.constant.Paths.SUPERHEROS_BY_LASTNAME;
 import static com.superhero.rest.constant.Paths.SUPERHERO_BY_ID;
 import static com.superhero.rest.constant.Paths.SUPERHERO_BY_SUPERHERONAME;
 import static com.superhero.rest.constant.Paths.VERSION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,7 @@ import com.superhero.model.SuperHero;
 import com.superhero.service.SuperHeroService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(value = VERSION + SUPERHEROS)
@@ -37,44 +38,50 @@ public class SuperHeroController {
 	@Autowired
 	private SuperHeroService superHeroService;
 	
-	@PostMapping(SUPERHEROS)
+	@ApiOperation("Creates a superhero")
+	@PostMapping(value = SUPERHEROS, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<SuperHero> createSuperHero(@RequestBody SuperHero superHero) {
 		SuperHero savedSuperHero = superHeroService.saveSuperHero(superHero);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedSuperHero.getId()).toUri();
 		return ResponseEntity.created(location).build();
 	}
 	
-	@GetMapping(SUPERHERO_BY_ID)
+	@ApiOperation("Retrieves a superhero by ID")
+	@GetMapping(value = SUPERHERO_BY_ID, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<SuperHero> retrieveSuperHeroById(@PathVariable Long id) {
 	    return superHeroService.retrieveSuperHeroById(id)
 	            .map( superHero -> ResponseEntity.ok().body(superHero) )     //200 OK
 	            .orElseThrow( () -> new SuperHeroNotFoundException("No registered Super Hero with ID = " + id)); //404 Not found
 	}
 	
-	@GetMapping(SUPERHERO_BY_SUPERHERONAME)
+	@ApiOperation("Retrieves a superhero by unique superhero name")
+	@GetMapping(value = SUPERHERO_BY_SUPERHERONAME, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<SuperHero> retrieveSuperHeroBySuperHeroName(@PathVariable String superHeroName) {
 	    return superHeroService.retrieveSuperHerosBySuperHeroName(superHeroName)
 	            .map( superHero -> ResponseEntity.ok().body(superHero) )     //200 OK
 	            .orElseThrow( () -> new SuperHeroNotFoundException("No registered Super Hero by a superHeroName = " + superHeroName)); //404 Not found
 	}
 	
-	@GetMapping(SUPERHEROS_BY_FIRSTNAME)
-	public List<SuperHero> retrieveSuperHerosByFirstName(@PathVariable String firstName) {
+	@ApiOperation("Retrieves a list of superheros by first name")
+	@GetMapping(value = SUPERHEROS_BY_FIRSTNAME, produces = APPLICATION_JSON_VALUE)
+	public Iterable<SuperHero> retrieveSuperHerosByFirstName(@PathVariable String firstName) {
 		return superHeroService.retrieveSuperHerosByFirstName(firstName);
 	}
 	
-	@GetMapping(SUPERHEROS_BY_LASTNAME)
-	public List<SuperHero> retrieveSuperHerosByLastName(@PathVariable String lastName) {
+	@ApiOperation("Retrieves a list of superheros by last name")
+	@GetMapping(value = SUPERHEROS_BY_LASTNAME, produces = APPLICATION_JSON_VALUE)
+	public Iterable<SuperHero> retrieveSuperHerosByLastName(@PathVariable String lastName) {
 		return superHeroService.retrieveSuperHerosByLastName(lastName);
 	}
 	
-	@GetMapping(SUPERHEROS)
-	public List<SuperHero> retrieveAllSuperHeros() {
+	@ApiOperation("Retrieves all superheros")
+	@GetMapping(value = SUPERHEROS, produces = APPLICATION_JSON_VALUE)
+	public Iterable<SuperHero> retrieveAllSuperHeros() {
 		return superHeroService.retrieveAllSuperHeros();
 	}
 	
-
-    @PutMapping(SUPERHERO_BY_ID)
+	@ApiOperation("Updates a superhero")
+    @PutMapping(value = SUPERHERO_BY_ID, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<SuperHero> updateSuperHero(@RequestBody SuperHero superHero, @PathVariable Long id) {
 		Optional<SuperHero> superHeroSaved = superHeroService.retrieveSuperHeroById(id);
 		if (superHeroSaved.isPresent()) {
@@ -104,7 +111,8 @@ public class SuperHeroController {
 		}
 	}
 	
-	@DeleteMapping(SUPERHERO_BY_ID)
+	@ApiOperation(value = "Deletes a superhero by ID")
+	@DeleteMapping(value = SUPERHERO_BY_ID, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> deleteSuperHero(@PathVariable Long id) {
 		superHeroService.deleteSuperHeroById(id);
 		return ResponseEntity.noContent().build();
