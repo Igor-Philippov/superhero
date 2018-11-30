@@ -4,6 +4,8 @@ import static com.superhero.rest.constant.Paths.MISSIONS_DELETED;
 import static com.superhero.rest.constant.Paths.MISSION_BY_ID;
 import static com.superhero.rest.constant.Paths.SUPERHERO_BY_ID;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +30,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${spring.security.role}")
     private String role;
+    //private List<String> roles;
 
     @Autowired
     public void configAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
     	
         BCryptPasswordEncoder encoder = passwordEncoder();
+        //auth.inMemoryAuthentication().withUser(username).password(encoder.encode(password)).roles(roles.toArray(new String[0]));
         auth.inMemoryAuthentication().withUser(username).password(encoder.encode(password)).roles(role);
     }
     
