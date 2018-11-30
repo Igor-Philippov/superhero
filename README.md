@@ -29,6 +29,6 @@ http://localhost:8080/swagger-ui.html
 ```
  
 ### Test categories:
- 1. Unit tests (src/test/com/demo/unit)
- 2. Rest tests (src/test/com/demo/rest)
- 3. Bdd tests (src/test/com/demo/bdd)
+ 1. Unit tests (src/test/com/superhero/unit)
+ 2. Rest tests (src/test/com/superhero/rest)
+ 3. Bdd tests (src/test/com/superhero/bdd)
