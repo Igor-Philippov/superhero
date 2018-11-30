@@ -8,6 +8,7 @@ import com.superhero.bdd.SuperHeroFeatureTest;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 public class CommonSteps extends SuperHeroFeatureTest {
 
@@ -21,5 +22,11 @@ public class CommonSteps extends SuperHeroFeatureTest {
     @Then("^Returned JSON object is not null$")
     public void returnedJSONObjectIsNotNull() {
         logger.info("Then - Returned JSON object is not null");
+    }
+    
+    
+    @Then("^The HTTP response status code is (\\d+)$")
+    public void userGetsOneMissionById(int id) throws Throwable {
+        logger.info("Then - The HTTP response status code is [{}]", id);
     }
 }
