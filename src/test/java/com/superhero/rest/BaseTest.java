@@ -4,11 +4,10 @@ import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import java.util.List;
 import java.util.Map;
 
-import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,16 +92,13 @@ public abstract class BaseTest {
 	protected static final String JSON_SCHEMA_PATH_SUPERHEROS = "schemas/schema_superheros.json";
 	
     @Value("${spring.security.username}")
-    private String USER_NAME;
+    private String username;
 
     @Value("${spring.security.password}")
-    private String PASSWORD;
+    private String password;
 
-    @Value("${spring.security.role}")
-    private String ROLE;
-
-	//private static final String USER_NAME = "shc_user";
-	//private static final String PASSWORD = "password";
+//    @Value("${spring.security.user.roles}")
+//    private List<String> roles;
 	
 	protected ValidatableResponse prepareGet(String path) {
 		return prepare().get(HOST_ROOT + path).then();
@@ -141,10 +137,10 @@ public abstract class BaseTest {
   }
   
   private RequestSpecification prepareSecured() {
-      return prepare().auth().basic(USER_NAME, PASSWORD).when();
+      return prepare().auth().basic(username, password).when();
   }
   
   private RequestSpecification prepareSecured(String body) {
-	  return prepare(body).auth().basic(USER_NAME, PASSWORD).when();
+	  return prepare(body).auth().basic(username, password).when();
   }
 }
