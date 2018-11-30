@@ -23,9 +23,14 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.swagger.annotations.ApiModel;
 
 @Entity
 @Table(name = "shc_super_hero")
+@JsonPropertyOrder({ "id", "firstName", "lastName", "superHeroName", "missions" })
+@ApiModel(description = "A hypotetical super hero")
 public class SuperHero implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -73,17 +78,6 @@ public class SuperHero implements Serializable {
         this.superHeroName = superHeroName;
     }
     
-//	@JsonCreator
-//	public SuperHero(@JsonProperty("id") Long id, 
-//			         @JsonProperty("firstname") String firstName,
-//			         @JsonProperty("lastname") String lastName, 
-//			         @JsonProperty("superheroname") String superHeroName,
-//			         @JsonProperty("missions") List<Mission> missions) {
-//		this(firstName, lastName, superHeroName);
-//		this.id = id;
-//		this.missions = missions;
-//	}
-
 	public Long getId() {
 		return id;
 	}
