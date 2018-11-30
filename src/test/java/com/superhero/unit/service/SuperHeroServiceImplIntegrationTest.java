@@ -46,19 +46,10 @@ import com.superhero.service.impl.SuperHeroServiceImpl;
 	 
 	    @Before
 	    public void setUp() {
-	        SuperHero sh1 = new SuperHero();
-	        sh1.setFirstName("firstName1");
-	        sh1.setLastName("lastName1");
-	        sh1.setSuperHeroName("superHeroName1");
+	        SuperHero sh1 = new SuperHero("firstName1", "lastName1", "superHeroName1");
 	        sh1.setId(-1L);
-	        SuperHero sh2 = new SuperHero();
-	        sh2.setFirstName("firstName2");
-	        sh2.setLastName("lastName2");
-	        sh2.setSuperHeroName("superHeroName2");
-	        SuperHero sh3 = new SuperHero();
-	        sh3.setFirstName("firstName3");
-	        sh3.setLastName("lastName3");
-	        sh3.setSuperHeroName("superHeroName3");
+	        SuperHero sh2 = new SuperHero("firstName2", "lastName2", "superHeroName2");
+	        SuperHero sh3 = new SuperHero("firstName3", "lastName3", "superHeroName3");
 
 	        List<SuperHero> allSuperHeros = Arrays.asList(sh1, sh2, sh3);
 
@@ -116,19 +107,10 @@ import com.superhero.service.impl.SuperHeroServiceImpl;
 
 	    @Test
 	    public void givenAllSuperHeros_whengetAll_thenReturn3Records() {
-	        SuperHero sh1 = new SuperHero();
-	        sh1.setFirstName("firstName1");
-	        sh1.setLastName("lastName1");
-	        sh1.setSuperHeroName("superHeroName1");
+	        SuperHero sh1 = new SuperHero("firstName1", "lastName1", "superHeroName1");
 	        sh1.setId(-1L);
-	        SuperHero sh2 = new SuperHero();
-	        sh2.setFirstName("firstName2");
-	        sh2.setLastName("lastName2");
-	        sh2.setSuperHeroName("superHeroName2");
-	        SuperHero sh3 = new SuperHero();
-	        sh3.setFirstName("firstName3");
-	        sh3.setLastName("lastName3");
-	        sh3.setSuperHeroName("superHeroName3");
+	        SuperHero sh2 = new SuperHero("firstName2", "lastName2", "superHeroName2");
+	        SuperHero sh3 = new SuperHero("firstName3", "lastName3", "superHeroName3");
 	        List<SuperHero> all = superHeroService.retrieveAllSuperHeros();
 	        verifyFindAllEmployeesIsCalledOnce();
 	        assertThat(all).hasSize(3).extracting(SuperHero::getSuperHeroName).contains(sh1.getSuperHeroName(), sh2.getSuperHeroName(), sh3.getSuperHeroName());
