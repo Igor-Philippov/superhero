@@ -19,10 +19,10 @@ import org.hibernate.annotations.Where;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /** An entity class which contains the information on a mission. */
 @Entity(name = "Mission")
@@ -68,10 +68,10 @@ public class Mission implements Serializable {
 	public Mission() {
 	}
 	
-//    @JsonCreator
-//	public Mission(@JsonProperty("name") String name) {
-//		this.name = name;
-//	}
+    @JsonCreator
+	public Mission(@JsonProperty("name") String name) {
+		this.name = name;
+	}
 		
     public Long getId() {
 		return id;
@@ -126,19 +126,6 @@ public class Mission implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-//	@Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Mission other = (Mission) o;
-//        return Objects.equals(name, other.name);
-//    }
-//	
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(name);
-//    }
 	
 	@Override
 	public String toString() {
