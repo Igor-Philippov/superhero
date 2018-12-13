@@ -28,7 +28,7 @@ public class Paths {
     public static final String MISSION_BY_ID = MISSIONS + "/{id}";
     
     /** /api/1.0/missions/name/{name} */
-    public static final String MISSION_BY_NAME = MISSIONS + "/name/{name}";
+    public static final String MISSIONS_BY_NAME = MISSIONS + "/name/{name}";
     
     /** /api/1.0/missions/completed/ */
     public static final String MISSIONS_COMPLETED = MISSIONS + "/completed";
