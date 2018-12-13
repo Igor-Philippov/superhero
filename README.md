@@ -29,6 +29,6 @@ http://localhost:8080/swagger-ui.html
 ```
  
 ### Test categories:
- 1. Unit tests (src/test/com/superhero/unit)
- 2. Rest tests (src/test/com/superhero/rest)
- 3. Bdd tests (src/test/com/superhero/bdd)
+ 1. Unit tests (com.superhero.test.unit.ApplicationUnitTestSuite)
+ 2. Integration tests (com.superhero.test.integration.ApplicationIntegrationTestSuite)
+ 3. Bdd tests (com.superhero.test.integration.bdd.*)
