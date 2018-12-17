@@ -30,6 +30,17 @@ public abstract class AbstractEndpointUnitTest extends BaseUnitTest {
     protected static Iterable<SuperHero> superHeros;
     protected static Iterable<Mission> missionsCompleted;
     
+    protected static final String ERROR_MSG_MISSION_BAD_JSON = "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement";
+    protected static final String ERROR_MSG_MISSION_NOT_FOUND_GET = "No registered Mission with ID = %s";
+    protected static final String ERROR_MSG_MISSION_NOT_FOUND_DELETE = "No registered for deletion Mission with ID = %s";
+    
+    protected static final String ERROR_MSG_SUPERHERO_BAD_JSON = "Validation failed for classes [com.superhero.model.SuperHero] during persist time for groups [javax.validation.groups.Default, ]\\nList of constraint violations:[\\n\\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=superHeroName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\\n\\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=firstName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\\n\\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=lastName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\\n]";
+    protected static final String ERROR_MSG_SUPERHERO_BAD_JSON_PUT = "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction";
+    protected static final String ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_GET = "No registered Super Hero with ID = %s";
+    protected static final String ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_PUT = "No registered Super Hero with ID = %s available for update";
+    protected static final String ERROR_MSG_SUPERHERO_NOT_FOUND_BY_SUPERHERO_NAME_GET = "No registered Super Hero by a superHeroName = %s";
+    protected static final String ERROR_MSG_SUPERHERO_NOT_FOUND_DELETE = "No class com.superhero.model.SuperHero entity with id %s exists!";
+
     @BeforeClass
     public static void setUpClass() {    	
         mission1 = new Mission("missionName1");

@@ -55,6 +55,7 @@
 		<java.version>1.8</java.version>
 		<docker.image.prefix>igorphilippov</docker.image.prefix>
 		<cucumber-version>1.2.5</cucumber-version>
+        <lombok-version>1.18.4</lombok-version>
 	    <dockerfile-version>1.4.9</dockerfile-version>
 	</properties>
 
@@ -139,6 +140,11 @@
             <artifactId>cucumber-java</artifactId>
             <version>${cucumber-version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok-version}</version>
         </dependency>
         <dependency>
             <groupId>info.cukes</groupId>
