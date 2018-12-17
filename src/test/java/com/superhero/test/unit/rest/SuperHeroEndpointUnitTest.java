@@ -11,6 +11,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,16 +25,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.net.URI;
 import java.util.Collections;
 
+import javax.validation.ConstraintViolationException;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -85,13 +91,17 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 	/** Expected result: A server exception is thrown and the response body contains its description */
 	public void _01_020_post_WhenInValidJSON() throws Exception {
 		logger.info("CALLING _01_020_post_WhenMissingJSON() - BEGIN");
-		// Code Details = 500
+		// Code Details = 500	
 		// Response body = 
 		// {
-        //   "timestamp": "2018-Nov-26 08:54:13",
-        //   "httpStatus": "500 INTERNAL_SERVER_ERROR",
-        //   "message": "Validation failed for classes [com.superhero.model.SuperHero] during persist time for groups [javax.validation.groups.Default, ]\nList of constraint violations:[\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=firstName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=lastName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=superHeroName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n]",
-        //   "details": "uri=/api/1.0/superheros"
+        //   "timestamp": "2018-Dec-17 04:51:13",
+        //   "code": 500,
+        //   "error": "Internal Server Error",
+        //   "exception": "javax.validation.ConstraintViolationException",
+        //   "details": "uri=/api/1.0/superheros",
+        //   "messages": [
+	    //      "Validation failed for classes [com.superhero.model.SuperHero] during persist time for groups [javax.validation.groups.Default, ]\nList of constraint violations:[\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=superHeroName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=firstName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n\tConstraintViolationImpl{interpolatedMessage='must not be empty', propertyPath=lastName, rootBeanClass=class com.superhero.model.SuperHero, messageTemplate='{javax.validation.constraints.NotEmpty.message}'}\n]"
+        //   ]
 		// {
 		// Response headers =
 		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
@@ -104,11 +114,16 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 		// x-content-type-options: nosniff 
 		// x-frame-options: DENY 
 		// x-xss-protection: 1; mode=block 
-		given(superHeroController.createSuperHero(superHero1)).willThrow(new RuntimeException("Validation failed for classes [com.superhero.model.SuperHero] during persist time for groups..."));
+		given(superHeroController.createSuperHero(superHero1)).willThrow(new ConstraintViolationException(ERROR_MSG_SUPERHERO_BAD_JSON, null));
 		mvc.perform(post(SUPERHEROS).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(superHero1)))
 				.andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("Validation failed for classes [com.superhero.model.SuperHero] during persist time for groups...")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(ConstraintViolationException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(ERROR_MSG_SUPERHERO_BAD_JSON)));
 		verify(superHeroController, times(1)).createSuperHero(superHero1);
 		verifyNoMoreInteractions(superHeroController);  
 		logger.info("CALLING _01_020_post_WhenMissingJSON() - END");
@@ -272,16 +287,27 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 	/** Expected result: HTTP 404 Not Found code returned by server and [No registered Super Hero with ID = ] text in the [message] header on the response */
 	public void _02_070_get_SuperHeroById_WhenInvalid() throws Exception {
 		logger.info("CALLING _02_070_get_SuperHeroById_WhenInvalid() - BEGIN");
+		// Code Details = 404
+		// Response body = 
 		// {
-		// "timestamp": "2018-Nov-26 09:07:30",
-		// "httpStatus": "404 NOT_FOUND",
-		// "message": "No registered Super Hero with ID = 0",
-		// "details": "uri=/api/1.0/superheros/0"
+		//   "timestamp": "2018-Dec-17 05:11:52",
+		//   "code": 404,
+		//   "error": "Not Found",
+		//   "exception": "com.superhero.rest.exception.SuperHeroNotFoundException",
+		//   "details": "uri=/api/1.0/superheros/0",
+		//   "messages": [
+		//      "No registered Super Hero with ID = 0"
+		//   ]
 		// {
-		given(superHeroController.retrieveSuperHeroById(superHero1.getId())).willThrow(new SuperHeroNotFoundException("No registered Super Hero with ID = " + superHero1.getId()));
+		given(superHeroController.retrieveSuperHeroById(superHero1.getId())).willThrow(new SuperHeroNotFoundException(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_GET, superHero1.getId())));
 		mvc.perform(get(SUPERHERO_BY_ID, superHero1.getId())).andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered Super Hero with ID = " + superHero1.getId())));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(SuperHeroNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/" + superHero1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_GET, superHero1.getId()))));
 		verify(superHeroController, times(1)).retrieveSuperHeroById(superHero1.getId());
 		verifyNoMoreInteractions(superHeroController);
 		logger.info("CALLING _02_070_get_SuperHeroById_WhenInvalid() - END");
@@ -326,17 +352,28 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 	/** Expected result: HTTP 404 Not Found code returned by server and [No registered Super Hero by a superHeroName = ] text in the [message] header on the response */
 	public void _02_090_get_SuperHeroBySuperHeroName_WhenInValid() throws Exception {
 		logger.info("CALLING _02_090_get_SuperHeroBySuperHeroName_WhenInValid() - BEGIN");
+		// Code Details = 404
+		// Response body = 
 		// {
-		//   "timestamp": "2018-Nov-26 10:06:45",
-		//   "httpStatus": "404 NOT_FOUND",
-		//   "message": "No registered Super Hero by a superHeroName = QQQ",
-		//   "details": "uri=/api/1.0/superheros/names/superhero/QQQ"
+		//   "timestamp": "2018-Dec-17 08:34:12",
+		//   "code": 404,
+		//   "error": "Not Found",
+		//   "exception": "com.superhero.rest.exception.SuperHeroNotFoundException",
+		//   "details": "uri=/api/1.0/superheros/names/superhero/QQQ",
+		//   "messages": [
+		//      "No registered Super Hero by a superHeroName = QQQ"
+		//   ]
 		// {
-		given(superHeroController.retrieveSuperHeroBySuperHeroName(superHero1.getSuperHeroName())).willThrow(new SuperHeroNotFoundException("No registered Super Hero by a superHeroName = " + superHero1.getSuperHeroName()));   	
+		given(superHeroController.retrieveSuperHeroBySuperHeroName(superHero1.getSuperHeroName())).willThrow(new SuperHeroNotFoundException(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_SUPERHERO_NAME_GET, superHero1.getSuperHeroName())));
 		mvc.perform(get(SUPERHERO_BY_SUPERHERONAME, superHero1.getSuperHeroName()))
 				.andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered Super Hero by a superHeroName = " + superHero1.getSuperHeroName())));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(SuperHeroNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/names/superhero/" + superHero1.getSuperHeroName()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_SUPERHERO_NAME_GET, superHero1.getSuperHeroName()))));
 		verify(superHeroController, times(1)).retrieveSuperHeroBySuperHeroName(superHero1.getSuperHeroName());
 		verifyNoMoreInteractions(superHeroController);  
 		logger.info("CALLING _02_090_get_SuperHeroBySuperHeroName_WhenInValid() - BEGIN");
@@ -387,27 +424,25 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 		// Code Details = 500
 		// Response body
 		// {
-		//   "timestamp": "2018-Nov-27 06:12:13",
-		//   "httpStatus": "500 INTERNAL_SERVER_ERROR",
-		//   "message": "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction",
-		//   "details": "uri=/api/1.0/superheros/70"
+		//   "timestamp": "2018-Dec-17 08:40:53",
+		//   "code": 500,
+		//   "error": "Internal Server Error",
+		//   "exception": "org.springframework.transaction.TransactionSystemException",
+		//   "details": "uri=/api/1.0/superheros/5",
+		//   "messages": [
+		//      "Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Error while committing the transaction"
+		//   ]
 		// }
-		// Response headers
-		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
-		// connection: close 
-		// content-type: application/json;charset=UTF-8 
-		// date: Thu, 22 Nov 2018 19:01:27 GMT 
-		// expires: 0 
-		// pragma: no-cache 
-		// transfer-encoding: chunked 
-		// x-content-type-options: nosniff 
-		// x-frame-options: DENY 
-		// x-xss-protection: 1; mode=block 	
-		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new RuntimeException("Could not commit JPA transaction; nested exception is javax.persistence.RollbackException"));
+		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new TransactionSystemException(ERROR_MSG_SUPERHERO_BAD_JSON_PUT));
 		mvc.perform(put(SUPERHERO_BY_ID, superHero1.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(superHero1)))
 				.andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("Could not commit JPA transaction; nested exception is javax.persistence.RollbackException")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(TransactionSystemException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/" + superHero1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(ERROR_MSG_SUPERHERO_BAD_JSON_PUT)));
 		verify(superHeroController, times(1)).updateSuperHero(superHero1, superHero1.getId());
 		verifyNoMoreInteractions(superHeroController); 
 		logger.info("CALLING _03_020_put_WhenFoundByIdAndInValidJSON() - END");
@@ -420,26 +455,25 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 		// Code Details = 404	
 		// Response body = 
 		// {
-		//   "timestamp": "2018-Nov-27 06:58:11",
-		//   "httpStatus": "404 NOT_FOUND",
-		//   "message": "No registered Super Hero with ID = 0 available for update",
-		//   "details": "uri=/api/1.0/superheros/9"
+		//   "timestamp": "2018-Dec-17 08:21:50",
+		//   "code": 404,
+		//   "error": "Not Found",
+		//   "exception": "com.superhero.rest.exception.SuperHeroNotFoundException",
+		//   "details": "uri=/api/1.0/superheros/0",
+		//   "messages": [
+		//      "No registered Super Hero with ID = 0 available for update"
+		//   ]
 		// }
-		// Response headers
-		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
-		// content-type: application/json;charset=UTF-8 
-		// date: Thu, 22 Nov 2018 19:05:25 GMT 
-		// expires: 0 
-		// pragma: no-cache 
-		// transfer-encoding: chunked 
-		// x-content-type-options: nosniff 
-		// x-frame-options: DENY 
-		// x-xss-protection: 1; mode=block 
-		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new SuperHeroNotFoundException("No registered Super Hero with ID = " + superHero1.getId() + " available for update"));
+		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new SuperHeroNotFoundException(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_PUT, superHero1.getId())));
 		mvc.perform(put(SUPERHERO_BY_ID, superHero1.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(superHero1)))
 				.andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered Super Hero with ID = " + superHero1.getId() + " available for update")));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(SuperHeroNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/" + superHero1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_PUT, superHero1.getId()))));
 		verify(superHeroController, times(1)).updateSuperHero(superHero1, superHero1.getId());
 		verifyNoMoreInteractions(superHeroController); 
 		logger.info("CALLING _03_030_put_WhenNotFoundByIdAndValidJSON() - END");
@@ -452,27 +486,25 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 		// Code Details = 404	
 		// Response body = 
 		// {
-		//   "timestamp": "2018-Nov-27 06:58:11",
-		//   "httpStatus": "404 NOT_FOUND",
-		//   "message": "No registered Super Hero with ID = 0 available for update",
-		//   "details": "uri=/api/1.0/superheros/9"
+		//   "timestamp": "2018-Dec-17 08:21:50",
+		//   "code": 404,
+		//   "error": "Not Found",
+		//   "exception": "com.superhero.rest.exception.SuperHeroNotFoundException",
+		//   "details": "uri=/api/1.0/superheros/0",
+		//   "messages": [
+		//      "No registered Super Hero with ID = 0 available for update"
+		//   ]
 		// }
-		// Response headers
-		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
-		// connection: close 
-		// content-type: application/json;charset=UTF-8 
-		// date: Thu, 22 Nov 2018 19:01:27 GMT 
-		// expires: 0 
-		// pragma: no-cache 
-		// transfer-encoding: chunked 
-		// x-content-type-options: nosniff 
-		// x-frame-options: DENY 
-		// x-xss-protection: 1; mode=block 
-		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new SuperHeroNotFoundException("No registered Super Hero with ID = " + superHero1.getId() + " available for update"));
+		given(superHeroController.updateSuperHero(superHero1, superHero1.getId())).willThrow(new SuperHeroNotFoundException(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_PUT, superHero1.getId())));
 		mvc.perform(put(SUPERHERO_BY_ID, superHero1.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(superHero1)))
 				.andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered Super Hero with ID = " + superHero1.getId() + " available for update")));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(SuperHeroNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/" + superHero1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_BY_ID_PUT, superHero1.getId()))));
 		verify(superHeroController, times(1)).updateSuperHero(superHero1, superHero1.getId());
 		verifyNoMoreInteractions(superHeroController); 
 		logger.info("CALLING _03_040_put_WhenNotFoundByIdAndInValidJSON() - END");
@@ -521,33 +553,26 @@ public class SuperHeroEndpointUnitTest extends AbstractEndpointUnitTest {
 		// Code Details = 500
 		// Response body = 
 		// {
-		//   "timestamp": "2018-Nov-27 05:58:21",
-		//   "httpStatus": "500 INTERNAL_SERVER_ERROR",
-		//   "message": "No class com.superhero.model.SuperHero entity with id 68 exists!",
-		//   "details": "uri=/api/1.0/superheros/68"
+		//   "timestamp": "2018-Dec-17 04:59:25",
+		//   "code": 500,
+		//   "error": "Internal Server Error",
+		//   "exception": "org.springframework.dao.EmptyResultDataAccessException",
+		//   "details": "uri=/api/1.0/superheros/0",
+		//   "messages": [
+		//      "No class com.superhero.model.SuperHero entity with id 0 exists!"
+		//   ]
 		// }
-		// Response headers = 
-		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
-		// content-type: application/json;charset=UTF-8 
-		// date: Fri, 23 Nov 2018 20:14:43 GMT 
-		// expires: 0 
-		// pragma: no-cache 
-		// transfer-encoding: chunked 
-		// x-content-type-options: nosniff 
-		// x-frame-options: DENY 
-		// x-xss-protection: 1; mode=block 
-		// {
-		//   "timestamp": "2018-Nov-26 10:06:45",
-		//   "httpStatus": "404 NOT_FOUND",
-		//   "message": "No registered Super Hero by a superHeroName = QQQ",
-		//   "details": "uri=/api/1.0/superheros/names/superhero/QQQ"
-		// {
-		given(superHeroController.deleteSuperHero(superHero1.getId())).willThrow(new RuntimeException("No class com.superhero.model.SuperHero entity with id " + superHero1.getId() + " exists!")); 
+		given(superHeroController.deleteSuperHero(superHero1.getId())).willThrow(new EmptyResultDataAccessException(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_DELETE, superHero1.getId()), 0)); 
         mvc.perform(delete(SUPERHERO_BY_ID, superHero1.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No class com.superhero.model.SuperHero entity with id " + superHero1.getId() + " exists!")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(EmptyResultDataAccessException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + SUPERHEROS + "/" + superHero1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_SUPERHERO_NOT_FOUND_DELETE, superHero1.getId()))));
 		verify(superHeroController, times(1)).deleteSuperHero(superHero1.getId());
 		verifyNoMoreInteractions(superHeroController);
 		logger.info("CALLING _04_030_delete_SuperHeroById_WhenInValidOrAlreadyDeleted_AndAuthorized() - END");

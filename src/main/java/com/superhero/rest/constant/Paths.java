@@ -6,7 +6,7 @@ public class Paths {
 	
     public static final String VERSION = "/api/1.0/";
 	
-    /** /api/1.0/superheros/ */
+    /** /api/1.0/superheros */
     public static final String SUPERHEROS = VERSION + "superheros";
     
     /** /api/1.0/superheros/{id} */
@@ -21,7 +21,7 @@ public class Paths {
     /** /api/1.0/superheros/names/last/{lastName} */
     public static final String SUPERHEROS_BY_LASTNAME = SUPERHEROS + "/names/last/{lastName}";
     
-    /** /api/1.0/missions/ */
+    /** /api/1.0/missions */
     public static final String MISSIONS = VERSION + "missions";
 	
     /** /api/1.0/missions/{id} */
@@ -30,10 +30,10 @@ public class Paths {
     /** /api/1.0/missions/name/{name} */
     public static final String MISSIONS_BY_NAME = MISSIONS + "/name/{name}";
     
-    /** /api/1.0/missions/completed/ */
+    /** /api/1.0/missions/completed */
     public static final String MISSIONS_COMPLETED = MISSIONS + "/completed";
     
-    /** /api/1.0/missions/deleted/ */
+    /** /api/1.0/missions/deleted */
     public static final String MISSIONS_DELETED = MISSIONS + "/deleted";
 
 }

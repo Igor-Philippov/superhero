@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /** An entity class which contains the information on a mission. */
 @Entity(name = "Mission")
@@ -50,13 +51,13 @@ public class Mission implements Serializable {
 
 	@Column(name = "is_deleted", nullable = false, columnDefinition = "bit default 0")
 	@Type(type = "numeric_boolean")
-    //@ApiModelProperty(hidden = true)
+    @ApiModelProperty(hidden = true)
 	private boolean isDeleted;
 
     @ManyToMany(mappedBy = "missions")
     @Where(clause="is_deleted = 0")
     @JsonBackReference	
-    //@ApiModelProperty(hidden = true)
+    @ApiModelProperty(hidden = true)
 // SASHA
 //	@ManyToMany(fetch = LAZY, cascade = { DETACH, MERGE, REFRESH, PERSIST }, targetEntity = SuperHero.class)
 //	@JoinTable(name = "shc_super_hero_mission", joinColumns = @JoinColumn(name = "m_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "sh_id", referencedColumnName = "id"))

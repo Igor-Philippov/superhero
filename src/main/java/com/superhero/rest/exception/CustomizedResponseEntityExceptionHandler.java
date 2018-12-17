@@ -1,10 +1,13 @@
 package com.superhero.rest.exception;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+
+import java.util.Collections;
 import java.util.Date;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,19 +21,26 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<ErrorInfo> handleAllExceptions(Exception ex, WebRequest request) {
-		ErrorInfo errorInfo = new ErrorInfo(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage(), request.getDescription(false));
-		return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+		return getResponseEntity(ex, request, INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler( {SuperHeroNotFoundException.class, 
 		                MissionNotFoundException.class,
 		                MissionUnprocessableException.class} )
 	public final ResponseEntity<ErrorInfo> handleUserNotFoundException(Exception ex, WebRequest request) {
-		HttpStatus httpStatus = ex.getClass() == MissionUnprocessableException.class ? HttpStatus.UNPROCESSABLE_ENTITY : HttpStatus.NOT_FOUND;
-		ErrorInfo errorInfo = new ErrorInfo(new Date(), httpStatus.toString(), ex.getMessage(), request.getDescription(false));
-		return new ResponseEntity<>(errorInfo, httpStatus);
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.setContentType(MediaType.APPLICATION_JSON);
-//		return new ResponseEntity<>(errorInfo, headers, httpStatus);
+		return getResponseEntity(ex, request, ex.getClass() == MissionUnprocessableException.class ? UNPROCESSABLE_ENTITY : NOT_FOUND);
+	}
+	
+	private ResponseEntity<ErrorInfo> getResponseEntity(Exception ex, WebRequest request, HttpStatus httpStatus) {
+		return new ResponseEntity<>(
+				ErrorInfo.builder()
+				.timestamp(new Date())
+				.code(httpStatus.value())
+				.error(httpStatus.getReasonPhrase())
+				.exception(ex.getClass().getName())
+				.details(request.getDescription(false))
+				.messages(Collections.singletonList(ex.getMessage()))
+				.build(), 
+				httpStatus);
 	}
 }

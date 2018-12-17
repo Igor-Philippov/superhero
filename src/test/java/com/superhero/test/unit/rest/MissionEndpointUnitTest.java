@@ -10,6 +10,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +29,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -85,12 +88,15 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 	public void _01_020_post_WhenInValidJSON() throws Exception {
 		logger.info("CALLING _01_020_post_WhenInValidJSON() - BEGIN");
 		// Code Details = 500
-		// Response body = 
-		// {
-		//   "timestamp": "2018-Nov-23 04:45:52",
-		//   "httpStatus": "500 INTERNAL_SERVER_ERROR",
-		//   "message": "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement",
-		//   "details": "uri=/api/1.0/missions"
+		// Response body = {
+	    //   "timestamp": "2018-Dec-14 09:45:56",
+	    //   "code": 500,
+	    //   "error": "Internal Server Error",
+	    //   "exception": "org.springframework.dao.DataIntegrityViolationException",
+	    //   "details": "uri=/api/1.0/missions",
+	    //   "messages": [
+	    //      "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement"
+	    //   ]
 		// }
 		// Response headers =
 		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
@@ -103,11 +109,16 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 		// x-content-type-options: nosniff 
 		// x-frame-options: DENY 
 		// x-xss-protection: 1; mode=block 
-		given(missionController.createMission(mission1)).willThrow(new RuntimeException("... nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement"));
+		given(missionController.createMission(mission1)).willThrow(new DataIntegrityViolationException(ERROR_MSG_MISSION_BAD_JSON));
 		mvc.perform(post(MISSIONS).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(mission1)))
 				.andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("... nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(DataIntegrityViolationException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + MISSIONS))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(ERROR_MSG_MISSION_BAD_JSON)));
 		verify(missionController, times(1)).createMission(mission1);
 		verifyNoMoreInteractions(missionController);  
 		logger.info("CALLING _01_020_post_WhenInValidJSON() - END");
@@ -199,16 +210,25 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 	/** Expected result: HTTP 404 Not Found code returned by server and [No registered Mission with ID = ] text in the [message] header on the response */
 	public void _02_060_get_MissionById_WhenInvalid() throws Exception {
 		logger.info("CALLING _02_060_get_MissionById_WhenInvalid() - BEGIN");
-		// {
-		//	 "timestamp": "2018-Nov-21 06:44:24",
-		//	 "httpStatus": "404 NOT_FOUND",
-		//	 "message": "No registered Mission with ID = 1",
-		//	 "details": "uri=/api/1.0/missions/1"
+		// Response body = {
+	    //   "timestamp": "2018-Dec-14 09:23:27",
+	    //   "code": 404,
+	    //   "error": "Not Found",
+	    //   "exception": "com.superhero.rest.exception.MissionNotFoundException",
+	    //   "details": "uri=/api/1.0/missions/0",
+	    //   "messages": [
+	    //      "No registered Mission with ID = 0"
+	    //   ]
 		// }
-		given(missionController.retrieveMissionById(mission1.getId())).willThrow(new MissionNotFoundException("No registered Mission with ID = " + mission1.getId()));
+		given(missionController.retrieveMissionById(mission1.getId())).willThrow(new MissionNotFoundException(String.format(ERROR_MSG_MISSION_NOT_FOUND_GET, mission1.getId())));
 		mvc.perform(get(MISSION_BY_ID, mission1.getId())).andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered Mission with ID = " + mission1.getId())));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(MissionNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + MISSIONS + "/" + mission1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_MISSION_NOT_FOUND_GET, mission1.getId()))));
 		verify(missionController, times(1)).retrieveMissionById(mission1.getId());
 		verifyNoMoreInteractions(missionController);
 		logger.info("CALLING _02_060_get_MissionById_WhenInvalid() - END");
@@ -282,12 +302,15 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 	public void _03_010_put_WhenFoundByIdAndInValidJSON() throws Exception {
 		logger.info("CALLING _03_010_put_WhenFoundByIdAndInValidJSON() - BEGIN");
 		// Code Details = 500
-		// Response body
-		// {
-		// "timestamp": "2018-Nov-22 07:01:27",
-		// "httpStatus": "500 INTERNAL_SERVER_ERROR",
-		// "message": "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement",
-		// "details": "uri=/api/1.0/missions/164"
+		// Response body = {
+	    //   "timestamp": "2018-Dec-14 09:45:56",
+	    //   "code": 500,
+	    //   "error": "Internal Server Error",
+	    //   "exception": "org.springframework.dao.DataIntegrityViolationException",
+	    //   "details": "/api/1.0/missions/164",
+	    //   "messages": [
+	    //      "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement"
+	    //   ]
 		// }
 		// Response headers
 		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
@@ -300,11 +323,16 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 		// x-content-type-options: nosniff 
 		// x-frame-options: DENY 
 		// x-xss-protection: 1; mode=block 	
-		given(missionController.updateMission(mission1, mission1.getId())).willThrow(new RuntimeException("...nested exception is org.hibernate.exception.ConstraintViolationException..."));
+		given(missionController.updateMission(mission1, mission1.getId())).willThrow(new DataIntegrityViolationException(ERROR_MSG_MISSION_BAD_JSON));
 		mvc.perform(put(MISSION_BY_ID, mission1.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(mission1)))
 				.andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("...nested exception is org.hibernate.exception.ConstraintViolationException...")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(DataIntegrityViolationException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + MISSIONS + "/" + mission1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(ERROR_MSG_MISSION_BAD_JSON)));
 		verify(missionController, times(1)).updateMission(mission1, mission1.getId());
 		verifyNoMoreInteractions(missionController); 
 		logger.info("CALLING _03_010_put_WhenFoundByIdAndInValidJSON() - END");
@@ -342,12 +370,15 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 	public void _03_030_put_WhenNotFoundByIdAndInValidJSON() throws Exception {
 		logger.info("CALLING _03_030_put_WhenNotFoundByIdAndInValidJSON() - BEGIN");
 		// Code Details = 500
-		// Response body = 
-		// {
-		// "timestamp": "2018-Nov-22 07:01:27",
-		// "httpStatus": "500 INTERNAL_SERVER_ERROR",
-		// "message": "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement",
-		// "details": "uri=/api/1.0/missions/164"
+		// Response body = {
+	    //   "timestamp": "2018-Dec-14 09:45:56",
+	    //   "code": 500,
+	    //   "error": "Internal Server Error",
+	    //   "exception": "org.springframework.dao.DataIntegrityViolationException",
+	    //   "details": "/api/1.0/missions/164",
+	    //   "messages": [
+	    //      "could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement"
+	    //   ]
 		// }
 		// Response headers
 		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
@@ -360,11 +391,16 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 		// x-content-type-options: nosniff 
 		// x-frame-options: DENY 
 		// x-xss-protection: 1; mode=block 	
-		given(missionController.updateMission(mission1, mission1.getId())).willThrow(new RuntimeException("...nested exception is org.hibernate.exception.ConstraintViolationException..."));
+		given(missionController.updateMission(mission1, mission1.getId())).willThrow(new DataIntegrityViolationException(ERROR_MSG_MISSION_BAD_JSON));
 		mvc.perform(put(MISSION_BY_ID, mission1.getId()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(mission1)))
 				.andExpect(status().isInternalServerError())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("...nested exception is org.hibernate.exception.ConstraintViolationException...")));
+				.andExpect(jsonPath("$.error", is(INTERNAL_SERVER_ERROR.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(INTERNAL_SERVER_ERROR.value()))
+				.andExpect(jsonPath("$.exception").value(DataIntegrityViolationException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + MISSIONS + "/" + mission1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(ERROR_MSG_MISSION_BAD_JSON)));
 		verify(missionController, times(1)).updateMission(mission1, mission1.getId());
 		verifyNoMoreInteractions(missionController); 
 		logger.info("CALLING _03_030_put_WhenNotFoundByIdAndInValidJSON() - END");
@@ -412,10 +448,14 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 		// Code Details = 404
 		// Response body = 
 		// {
-		//   "timestamp": "2018-Nov-23 08:14:43",
-		//   "httpStatus": "404 NOT_FOUND",
-		//   "message": "No registered for deletion Mission with ID = 110",
-		//   "details": "uri=/api/1.0/missions/110"
+		//   "timestamp": "2018-Dec-14 09:23:27",
+	    //   "code": 404,
+	    //   "error": "Not Found",
+	    //   "exception": "com.superhero.rest.exception.MissionNotFoundException",
+	    //   "details": "uri=/api/1.0/missions/110",
+	    //   "messages": [
+	    //      "No registered for deletion Mission with ID = 110"
+	    //   ]
 		// }
 		// Response headers = 
 		// cache-control: no-cache, no-store, max-age=0, must-revalidate 
@@ -427,12 +467,17 @@ public class MissionEndpointUnitTest extends AbstractEndpointUnitTest {
 		// x-content-type-options: nosniff 
 		// x-frame-options: DENY 
 		// x-xss-protection: 1; mode=block 
-		given(missionController.softDeleteMission(mission1.getId())).willThrow(new MissionNotFoundException("No registered for deletion Mission with ID = " + mission1.getId())); 
+		given(missionController.softDeleteMission(mission1.getId())).willThrow(new MissionNotFoundException(String.format(ERROR_MSG_MISSION_NOT_FOUND_DELETE, mission1.getId()))); 
         mvc.perform(delete(MISSION_BY_ID, mission1.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.message", is("No registered for deletion Mission with ID = " + mission1.getId())));
+				.andExpect(jsonPath("$.error", is(NOT_FOUND.getReasonPhrase())))
+				.andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+				.andExpect(jsonPath("$.exception").value(MissionNotFoundException.class.getName()))
+				.andExpect(jsonPath("$.details").value("uri=" + MISSIONS + "/" + mission1.getId()))
+				.andExpect(jsonPath("$.messages.length()").value(1))
+				.andExpect(jsonPath("$.messages[0]", is(String.format(ERROR_MSG_MISSION_NOT_FOUND_DELETE, mission1.getId()))));
 		verify(missionController, times(1)).softDeleteMission(mission1.getId());
 		verifyNoMoreInteractions(missionController);
 		logger.info("CALLING _04_030_delete_MissionById_WhenInValidOrAlreadyDeleted_AndAuthorized() - END");
